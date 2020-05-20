@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "844301343447",
+    "firebase_url": "https://githubusers-realm-fcm.firebaseio.com",
+    "project_id": "githubusers-realm-fcm",
+    "storage_bucket": "githubusers-realm-fcm.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:844301343447:android:c8f34bbd6fa43aee046e92",
+        "android_client_info": {
+          "package_name": "com.example.githubusers_realm_fcm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "844301343447-hdva4grtim8npdiui53pq6ufeeiivpqh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCzoNUDwLipF7Yv67u8w5to4hmgfd93tnQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "844301343447-hdva4grtim8npdiui53pq6ufeeiivpqh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
