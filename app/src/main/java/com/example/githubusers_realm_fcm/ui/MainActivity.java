@@ -2,10 +2,14 @@ package com.example.githubusers_realm_fcm.ui;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,6 +25,7 @@ import com.example.githubusers_realm_fcm.db.models.UserInfo;
 import com.example.githubusers_realm_fcm.db.models.UserRepository;
 import com.example.githubusers_realm_fcm.retrofit.GitHubApi;
 import com.example.githubusers_realm_fcm.retrofit.ServiceGenerator;
+import com.google.android.gms.common.internal.Constants;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -44,7 +49,13 @@ import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 import io.realm.Realm;
 import io.realm.RealmList;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
 import retrofit2.HttpException;
+
+import static com.example.githubusers_realm_fcm.common.Common.ACTION_NAME;
+import static com.example.githubusers_realm_fcm.common.Common.CHANGES_COUNT_MESSAGE;
+import static com.example.githubusers_realm_fcm.common.Common.USER_ID_MESSAGE;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -54,6 +65,9 @@ public class MainActivity extends AppCompatActivity {
     DBService dbService = new DBService();
     UsersAdapter adapter;
     ProgressBar mProgressBar;
+    MyBroadcastReceiver receiver;
+    Realm realm;
+    List<User> mUserList = new ArrayList<>();
 
     private static final String TAG = "MainActivity";
 
@@ -64,6 +78,10 @@ public class MainActivity extends AppCompatActivity {
 
         usersRecyclerView = findViewById(R.id.users_recyclerview);
         mProgressBar = findViewById(R.id.progress_circular);
+
+        receiver = new MyBroadcastReceiver();
+
+        realm = Realm.getDefaultInstance();
 
         FirebaseMessaging.getInstance().setAutoInitEnabled(true);
 
@@ -84,8 +102,16 @@ public class MainActivity extends AppCompatActivity {
 
         initRecyclerView();
 
+        displayLocalData();
+
         fetchData();
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        displayLocalData();
     }
 
     private void fetchData() {
@@ -114,14 +140,12 @@ public class MainActivity extends AppCompatActivity {
                     public void onError(Throwable e) {
                         Log.e(TAG, "onError: ", e);
                         displayLocalData();
-                        mProgressBar.setVisibility(View.GONE);
                     }
 
                     @Override
                     public void onComplete() {
                         persistFetchedData(userResponseToUser(fetchedUsers));
                         displayLocalData();
-                        mProgressBar.setVisibility(View.GONE);
                     }
                 });
     }
@@ -166,7 +190,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void persistFetchedData(List<User> users) {
-        Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
 
         if (!realm.isEmpty()) {
@@ -198,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initRecyclerView() {
 
-        adapter = new UsersAdapter(this, new ArrayList<>());
+        adapter = new UsersAdapter(this, mUserList);
         usersRecyclerView.setHasFixedSize(true);
         usersRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         usersRecyclerView.setAdapter(adapter);
@@ -207,12 +230,43 @@ public class MainActivity extends AppCompatActivity {
 
     private void displayLocalData() {
         List<User> users = Realm.getDefaultInstance().copyFromRealm(dbService.getAll(User.class));
-        adapter.setUsers(users);
+
+        if (!users.isEmpty()) {
+            mUserList.clear();
+            mUserList.addAll(users);
+            adapter.notifyDataSetChanged();
+            mProgressBar.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ACTION_NAME);
+        registerReceiver(receiver, intentFilter);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         mCompositeDisposable.clear();
+        unregisterReceiver(receiver);
     }
+
+    private class MyBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle extras = intent.getExtras();
+
+            assert extras != null;
+
+            Integer userId = extras.getInt(USER_ID_MESSAGE);
+            Integer changesCount = extras.getInt(CHANGES_COUNT_MESSAGE);
+
+            displayLocalData();
+        }
+    }
+
 }
+

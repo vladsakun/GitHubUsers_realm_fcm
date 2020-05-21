@@ -9,6 +9,7 @@ public class User extends RealmObject implements Serializable {
 
     @PrimaryKey
     private Integer id;
+
     private UserInfo mUserInfo;
     private Integer changesCount;
 

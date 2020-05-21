@@ -36,17 +36,24 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UsersHolder>
 
     @Override
     public void onBindViewHolder(@NonNull UsersHolder holder, int position) {
-        holder.login.setText(usersList.get(position).getUserInfo().getLogin());
+        holder.login.setText(usersList.get(position).getUserInfo().getLogin() + " Id: " + usersList.get(position).getId());
 
         if (usersList.get(position).getChangesCount() != 0) {
             holder.changesCount.setText(String.valueOf(usersList.get(position).getChangesCount()));
+        }else{
+            holder.changesCount.setVisibility(View.INVISIBLE);
         }
 
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(mContext, UserDetailActivity.class);
-            intent.putExtra(Common.USER_MESSAGE, usersList.get(position).getId());
+            intent.putExtra(Common.USER_ID_MESSAGE, usersList.get(position).getId());
             mContext.startActivity(intent);
         });
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
     }
 
     public void setUsers(List<User> users) {
