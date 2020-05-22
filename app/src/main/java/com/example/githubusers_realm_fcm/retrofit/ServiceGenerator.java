@@ -9,8 +9,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ServiceGenerator {
 
-    public static final String BASE_URL = "https://api.github.com/";
+    private static final String BASE_URL = "https://api.github.com/";
 
+    //Auth to github api for increasing rate limit
     private static OkHttpClient client = new OkHttpClient.Builder()
             .addInterceptor(new BasicAuthInterceptor(Common.CLIENT_ID, Common.CLIENT_SECRET))
             .build();

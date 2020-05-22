@@ -2,4 +2,10 @@
     <string name="app_name">GitHubUsers_realm_fcm</string>
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
     <string name="fcm_message">FCM Message</string>
+    <string name="git_hub_users">Git hub users</string>
+    <string name="repositories">Repositories</string>
+    <string name="user_does_not_have_repositories">%1$s does not have repositories</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

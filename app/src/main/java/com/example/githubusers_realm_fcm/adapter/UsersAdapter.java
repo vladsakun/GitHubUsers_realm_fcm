@@ -38,7 +38,9 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UsersHolder>
     public void onBindViewHolder(@NonNull UsersHolder holder, int position) {
         holder.login.setText(usersList.get(position).getUserInfo().getLogin() + " Id: " + usersList.get(position).getId());
 
+        //Display if changesCount not 0
         if (usersList.get(position).getChangesCount() != 0) {
+            holder.changesCount.setVisibility(View.VISIBLE);
             holder.changesCount.setText(String.valueOf(usersList.get(position).getChangesCount()));
         }else{
             holder.changesCount.setVisibility(View.INVISIBLE);
@@ -59,10 +61,6 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UsersHolder>
     public void setUsers(List<User> users) {
         this.usersList = users;
         notifyDataSetChanged();
-    }
-
-    public List<User> getUsersList() {
-        return usersList;
     }
 
     @Override
