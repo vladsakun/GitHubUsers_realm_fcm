@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.example.githubusers_realm_fcm.R;
 import com.example.githubusers_realm_fcm.adapter.UsersAdapter;
@@ -24,6 +25,7 @@ import com.example.githubusers_realm_fcm.retrofit.GitHubApi;
 import com.example.githubusers_realm_fcm.retrofit.ServiceGenerator;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -138,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
                         //On error (connectivity)
                         //Show local data
                         Log.e(TAG, "onError: ", e);
-                        displayLocalData();
+                        displayFetchedData();
                     }
 
                     @Override
@@ -146,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
 
                         //Add data to local db
                         persistFetchedData(userResponseToUser(fetchedUsers));
-                        displayLocalData();
+                        displayFetchedData();
                     }
                 });
     }
@@ -246,6 +248,26 @@ public class MainActivity extends AppCompatActivity {
             adapter.setUsers(users);
             mProgressBar.setVisibility(View.GONE);
         }
+    }
+
+    private void displayFetchedData() {
+
+        //Convert all statements from db to list of user
+        List<User> users = Realm.getDefaultInstance().copyFromRealm(dbService.getAll(User.class));
+
+        if (!users.isEmpty()) {
+            adapter.setUsers(users);
+            mProgressBar.setVisibility(View.GONE);
+        }
+        else{
+            mProgressBar.setVisibility(View.GONE);
+            showNoUsersSnackBar();
+        }
+    }
+
+    private void showNoUsersSnackBar() {
+        Snackbar.make(findViewById(R.id.user_list_container),
+                R.string.user_list_is_empty, Snackbar.LENGTH_INDEFINITE).show();
     }
 
     @Override

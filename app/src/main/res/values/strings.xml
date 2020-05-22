@@ -5,7 +5,6 @@
     <string name="git_hub_users">Git hub users</string>
     <string name="repositories">Repositories</string>
     <string name="user_does_not_have_repositories">%1$s does not have repositories</string>
+    <string name="user_list_is_empty">Local user list is empty\nRestart app with enabled Internet</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
